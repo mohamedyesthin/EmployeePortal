@@ -1,0 +1,302 @@
+<div class="border border-gray-200 p-2 rounded-lg shadow-sm bg-white">
+    <p-tabs  [(value)]="activeTabIndex">
+        <p-tablist class="flex items-center" style="width: 100%;">
+            <div class="flex space-x-2">
+                <p-tab [value]="0">All</p-tab>
+                <p-tab [value]="1">Active</p-tab>
+                <p-tab [value]="2">Archived</p-tab>
+            </div>
+
+            <div class="ml-auto">
+                <button pButton type="button" label="Export to Excel" icon="pi pi-file-excel" class="mr-1"
+                    style="background-color: violet; border-color: violet; color: white;"
+                    (click)="exportExcel(employeeTabs[activeTabIndex], getFileNameForTab())">
+                </button>
+            </div>
+        </p-tablist>
+
+
+        <p-tabpanels>
+            <!-- All Employees -->
+            <p-tabpanel [value]="0">
+                <p-table #allTable [value]="allEmployees" [paginator]="true" [rows]="10"
+                    [rowsPerPageOptions]="[10, 20, 50]" [sortField]="'employeeName'" [sortOrder]="1"
+                    [globalFilterFields]="[
+          'employeeCode',
+          'employeeName',
+          'designation',
+          'center',
+          'campus',
+          'zone',
+          'reportingManager',
+          'status'
+        ]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th></th>
+                            <th style="width:22%" pSortableColumn="employeeCode">
+                                Employee Code
+                                <p-sortIcon field="employeeCode"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="employeeName">
+                                Employee Name
+                                <p-sortIcon field="employeeName"></p-sortIcon>
+                            </th>
+                            <th style="width:22%">Designation</th>
+                            <th style="width:22%" pSortableColumn="center">
+                                Center
+                                <p-sortIcon field="center"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="campus">
+                                Campus
+                                <p-sortIcon field="campus"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="zone">
+                                Zone
+                                <p-sortIcon field="zone"></p-sortIcon>
+                            </th>
+                            <th style="width:22%">Rept.Manager</th>
+                            <th style="width:22%" pSortableColumn="status">
+                                Status
+                                <p-sortIcon field="status"></p-sortIcon>
+                            </th>
+                            <th style="width:12%">Edit</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>
+                                <p-columnFilter type="text" field="designation" placeholder="Filter Designation"
+                                    filterOn="input"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="center" placeholder="Filter Center"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="campus" placeholder="Filter Campus"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="zone" placeholder="Filter Zone"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="reportingManager"
+                                    placeholder="Filter Reporting Manager"></p-columnFilter>
+                            </th>
+                            <th></th>
+                            <th></th>
+
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-emp>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="emp" />
+                            </td>
+                            <td>{{ emp.employeeCode }}</td>
+                            <td>{{ emp.employeeName }}</td>
+                            <td style="width: 60px">{{ emp.designation }}</td>
+                            <td>{{ emp.center }}</td>
+                            <td>{{ emp.campus }}</td>
+                            <td>{{ emp.zone }}</td>
+                            <td>{{ emp.reportingManager }}</td>
+                            <td>{{ emp.status }}</td>
+                            <td>
+                                <button pButton type="button" icon="pi pi-pencil" class="p-button-text"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-tabpanel>
+
+            <!-- Active Employees -->
+            <p-tabpanel [value]="1">
+                <p-table #allTable [value]="activeEmployees" [paginator]="true" [rows]="10" [sortField]="'employeeName'"
+                    [sortOrder]="1" [rowsPerPageOptions]="[10, 20, 50]" [globalFilterFields]="[
+          'employeeCode',
+          'employeeName',
+          'designation',
+          'center',
+          'campus',
+          'zone',
+          'reportingManager',
+          'status'
+        ]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th></th>
+                            <th style="width:22%" pSortableColumn="employeeCode">
+                                Employee Code
+                                <p-sortIcon field="employeeCode"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="employeeName">
+                                Employee Name
+                                <p-sortIcon field="employeeName"></p-sortIcon>
+                            </th>
+                            <th style="width:22%">Designation</th>
+                            <th style="width:22%" pSortableColumn="center">
+                                Center
+                                <p-sortIcon field="center"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="campus">
+                                Campus
+                                <p-sortIcon field="campus"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="zone">
+                                Zone
+                                <p-sortIcon field="zone"></p-sortIcon>
+                            </th>
+                            <th style="width:22%">Rept.Manager</th>
+                            <th style="width:22%" pSortableColumn="status">
+                                Status
+                                <p-sortIcon field="status"></p-sortIcon>
+                            </th>
+                            <th style="width:12%">Edit</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>
+                                <p-columnFilter type="text" field="designation" placeholder="Filter Designation"
+                                    filterOn="input"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="center" placeholder="Filter Center"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="campus" placeholder="Filter Campus"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="zone" placeholder="Filter Zone"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="reportingManager"
+                                    placeholder="Filter Reporting Manager"></p-columnFilter>
+                            </th>
+                            <th></th>
+                            <th></th>
+
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-emp>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="emp" />
+                            </td>
+                            <td>{{ emp.employeeCode }}</td>
+                            <td>{{ emp.employeeName }}</td>
+                            <td style="width: 60px">{{ emp.designation }}</td>
+                            <td>{{ emp.center }}</td>
+                            <td>{{ emp.campus }}</td>
+                            <td>{{ emp.zone }}</td>
+                            <td>{{ emp.reportingManager }}</td>
+                            <td>{{ emp.status }}</td>
+                            <td>
+                                <button pButton type="button" icon="pi pi-pencil" class="p-button-text"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-tabpanel>
+
+            <!-- Archived Employees -->
+            <p-tabpanel [value]="2">
+                <p-table #allTable [value]="archivedEmployees" [paginator]="true" [rows]="10"
+                    [sortField]="'employeeName'" [sortOrder]="1" [rowsPerPageOptions]="[10, 20, 50]"
+                    [globalFilterFields]="[
+          'employeeCode',
+          'employeeName',
+          'designation',
+          'center',
+          'campus',
+          'zone',
+          'reportingManager',
+          'status'
+        ]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th></th>
+                            <th style="width:22%" pSortableColumn="employeeCode">
+                                Employee Code
+                                <p-sortIcon field="employeeCode"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="employeeName">
+                                Employee Name
+                                <p-sortIcon field="employeeName"></p-sortIcon>
+                            </th>
+                            <th style="width:22%">Designation</th>
+                            <th style="width:22%" pSortableColumn="center">
+                                Center
+                                <p-sortIcon field="center"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="campus">
+                                Campus
+                                <p-sortIcon field="campus"></p-sortIcon>
+                            </th>
+                            <th style="width:22%" pSortableColumn="zone">
+                                Zone
+                                <p-sortIcon field="zone"></p-sortIcon>
+                            </th>
+                            <th style="width:22%">Rept.Manager</th>
+                            <th style="width:22%" pSortableColumn="status">
+                                Status
+                                <p-sortIcon field="status"></p-sortIcon>
+                            </th>
+                            <th style="width:12%">Edit</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>
+                                <p-columnFilter type="text" field="designation" placeholder="Filter Designation"
+                                    filterOn="input"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="center" placeholder="Filter Center"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="campus" placeholder="Filter Campus"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="zone" placeholder="Filter Zone"></p-columnFilter>
+                            </th>
+                            <th>
+                                <p-columnFilter type="text" field="reportingManager"
+                                    placeholder="Filter Reporting Manager"></p-columnFilter>
+                            </th>
+                            <th></th>
+                            <th></th>
+
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-emp>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="emp" />
+                            </td>
+                            <td>{{ emp.employeeCode }}</td>
+                            <td>{{ emp.employeeName }}</td>
+                            <td style="width: 60px">{{ emp.designation }}</td>
+                            <td>{{ emp.center }}</td>
+                            <td>{{ emp.campus }}</td>
+                            <td>{{ emp.zone }}</td>
+                            <td>{{ emp.reportingManager }}</td>
+                            <td>{{ emp.status }}</td>
+                            <td>
+                                <button pButton type="button" icon="pi pi-pencil" class="p-button-text"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>

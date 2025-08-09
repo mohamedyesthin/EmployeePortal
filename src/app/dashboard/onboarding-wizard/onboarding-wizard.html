@@ -1,0 +1,107 @@
+<div class="border border-gray-200 p-4 rounded-lg shadow-sm bg-white" [formGroup]="form">
+  <div class="m-2 flex gap-6 bg-white text-black h-screen">
+<!-- Left Side Tabs -->
+<div class="w-1/4 pr-4 bg-white">
+  <ul class="space-y-2">
+    @for (tab of tabs; track $index) {
+      <li (click)="activeTabIndex = $index" class="cursor-pointer p-2 rounded-md"
+        [ngClass]="{
+          'bg-gray-500 text-white': activeTabIndex === $index,
+          'hover:bg-gray-200 text-black': activeTabIndex !== $index
+        }">
+        {{ tab.tabName | titlecase }}
+      </li>
+    }
+  </ul>
+</div>
+
+<!-- Right Side Fields -->
+<div class="flex-1 p-4 bg-gray-100 rounded-lg" [formGroup]="activeTab">
+  <!-- <h2 class="text-lg font-semibold mb-4 text-black">{{ tabs[activeTabIndex]?.tabName | titlecase }}</h2> -->
+
+  <div class="grid grid-cols-2 gap-4" formArrayName="fields">
+    @for (fieldCtrl of activeFields.controls; track $index) {
+      <div [formGroupName]="$index">
+        <label class="block mb-1 font-medium text-black">
+          {{ fieldCtrl.get('name')?.value | titlecase }}
+          @if (fieldCtrl.get('required')?.value) {
+            <span class="text-red-500">*</span>
+          }
+        </label>
+
+        <!-- Text -->
+        @if (['text','number'].includes(fieldCtrl.get('type')?.value)) {
+          <input pInputText formControlName="value"
+            [placeholder]="fieldCtrl.get('placeholder')?.value" class="w-full" />
+          @if (fieldCtrl.get('value')?.invalid && fieldCtrl.get('value')?.touched) {
+            <div class="text-red-500 text-sm">
+              This field is required.
+            </div>
+          }
+        }
+
+        <!-- Email -->
+        @if (fieldCtrl.get('type')?.value === 'email') {
+          <input type="email" pInputText formControlName="value"
+            [placeholder]="fieldCtrl.get('placeholder')?.value" class="w-full" />
+        }
+
+        <!-- Textarea -->
+        @if (fieldCtrl.get('type')?.value === 'textarea') {
+          <textarea pInputTextarea formControlName="value"
+            [placeholder]="fieldCtrl.get('placeholder')?.value" class="w-full"></textarea>
+        }
+
+        <!-- Select -->
+        @if (fieldCtrl.get('type')?.value === 'select') {
+          <p-select [options]="prepareOptions(fieldCtrl.get('options')?.value)"
+            formControlName="value" placeholder="Select" class="w-full">
+          </p-select>
+        }
+
+        <!-- Date -->
+        @if (fieldCtrl.get('type')?.value === 'date') {
+          <p-datepicker formControlName="value" dateFormat="yy-mm-dd" class="w-full"></p-datepicker>
+        }
+
+        <!-- Switch -->
+        @if (fieldCtrl.get('type')?.value === 'switch') {
+          <p-toggleswitch formControlName="value"></p-toggleswitch>
+        }
+
+        <!-- Checkbox group -->
+        @if (fieldCtrl.get('type')?.value === 'checkbox') {
+          @for (option of fieldCtrl.get('options')?.value; track $index) {
+            <div class="flex items-center mb-2">
+              <p-checkbox [value]="option" formControlName="value"
+                [inputId]="fieldCtrl.get('label')?.value + '-' + option">
+              </p-checkbox>
+              <label [for]="fieldCtrl.get('label')?.value + '-' + option" class="ml-2">{{ option }}</label>
+            </div>
+          }
+        }
+
+        <!-- Radio -->
+        @if (fieldCtrl.get('type')?.value === 'radio') {
+          @for (option of fieldCtrl.get('options')?.value; track $index) {
+            <div class="flex items-center mb-2">
+              <p-radioButton [value]="option" formControlName="value"
+                [inputId]="fieldCtrl.get('label')?.value + '-' + option">
+              </p-radioButton>
+              <label [for]="fieldCtrl.get('label')?.value + '-' + option" class="ml-2">{{ option }}</label>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex justify-end mt-6 gap-3">
+    <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="onUpdate()"></button>
+    <button pButton type="button" label="Submit" class="p-button-success" (click)="onSubmit()"></button>
+  </div>
+</div>
+
+  </div>
+</div>

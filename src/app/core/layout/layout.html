@@ -1,0 +1,20 @@
+<div class="flex flex-col h-screen">
+
+  <!-- Navbar -->
+  <app-navbar class="fixed top-0 left-0 w-full z-50"></app-navbar>
+
+  <div class="flex flex-1 pt-16">
+
+    <!-- Sidebar -->
+    <app-sidebar class="fixed top-16 left-0 h-[calc(100%-4rem)] z-40"></app-sidebar>
+
+    <!-- Main Content -->
+    <main
+      class="flex-1 p-6 bg-gray-50 overflow-y-auto transition-all duration-300"
+      [class.ml-64]="isOpen()"
+      [class.ml-0]="!isOpen()">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

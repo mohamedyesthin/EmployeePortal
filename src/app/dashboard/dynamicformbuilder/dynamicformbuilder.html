@@ -1,0 +1,150 @@
+<form [formGroup]="form" class="border border-gray-200 rounded-lg shadow-sm bg-white">
+  <div class="flex">
+
+    <!-- Left: Form Elements -->
+    <div class="w-1/4 border-r border-gray-300 p-4 overflow-y-auto">
+      <h2 class="text-xl font-bold mb-4">Form Elements</h2>
+      <p class="text-sm text-gray-500 mb-3">Drag elements to the canvas to build your form</p>
+
+      <div class="space-y-3" 
+           cdkDropList 
+           [cdkDropListData]="fieldTypes" 
+           [cdkDropListConnectedTo]="['formFieldsList']">
+        @for (type of fieldTypes; track type) {
+          <div cdkDrag class="p-3 bg-white border rounded hover:shadow cursor-move">
+            <p class="font-semibold">{{ type.label }}</p>
+            <p class="text-sm text-gray-500">{{ type.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Center: Canvas Area -->
+    <div class="w-2/4 p-4 overflow-y-auto bg-gray-100">
+      <h2 class="text-xl font-bold mb-4">Form Tabs</h2>
+
+      <div class="flex space-x-3" 
+           [ngClass]="form.get('tabName')?.hasError('required') ? 'mb-2' : 'mb-4'">
+        <div class="w-1/3">
+          <input class="border p-2 rounded w-full" placeholder="Tab name" formControlName="tabName" />
+        </div>
+
+        <select class="border p-2 rounded w-1/3" formControlName="tabType">
+          <option value="">Choose Tab Type</option>
+          <option value="basic">Basic</option>
+          <option value="advanced">Advanced</option>
+        </select>
+
+        <input type="number" class="border p-2 rounded w-1/6" formControlName="tabOrder" placeholder="Order" />
+
+        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 rounded"
+                (click)="preview()">Preview</button>
+        <button type="button" class="bg-green-500 hover:bg-green-600 text-white px-4 rounded"
+                (click)="saveTab()">Submit</button>
+      </div>
+
+      @if (form.get('tabName')?.hasError('required')) {
+        <div class="text-red-500 text-sm mb-2">
+          Tab name is required.
+        </div>
+      }
+
+      <div cdkDropList 
+           #formFieldsList="cdkDropList" 
+           id="formFieldsList" 
+           formArrayName="fields"
+           [cdkDropListData]="fieldsArray.controls" 
+           [cdkDropListConnectedTo]="['fieldTypes']"
+           (cdkDropListDropped)="drop($event)" 
+           class="border-2 border-dashed rounded p-4 min-h-[300px] space-y-4">
+
+        @for (field of fieldsArray.controls; track $index; let i = $index) {
+          <div [formGroupName]="i"
+               class="p-3 border rounded relative hover:border-purple-600"
+               [class.border-purple-600]="selectedFieldIndex === i"
+               (click)="selectField(i)">
+            <p class="font-medium">{{ field.value.label }}</p>
+            <input class="mt-1 border p-2 w-full" [placeholder]="field.value.placeholder" disabled />
+
+            @if (['select','checkbox','radio'].includes(field.get('type')?.value) &&
+                 field.get('options')?.touched && 
+                 field.get('options')?.hasError('required')) {
+              <div class="text-red-500 text-sm mt-2">
+                Options are required for this field type.
+              </div>
+            }
+
+            <button class="absolute top-2 right-2 text-red-500"
+                    (click)="removeField(i); $event.stopPropagation();">🗑️</button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right: Element Properties -->
+    <div class="w-1/4 border-l border-gray-300 p-4 overflow-y-auto">
+      <h2 class="text-xl font-bold mb-4">Element Properties</h2>
+      <p class="text-xs text-gray-500 mb-2">Customize the selected form element</p>
+
+      @if (selectedField) {
+        <div [formGroup]="selectedField" class="space-y-3">
+          <div>
+            <label class="block text-sm">Label</label>
+            <input class="border p-2 w-full rounded" formControlName="label" />
+          </div>
+
+          <div>
+            <label class="block text-sm">Field Name</label>
+            <input class="border p-2 w-full rounded" formControlName="name" placeholder="Enter field name" />
+            @if (selectedField.get('name')?.hasError('required')) {
+              <div class="text-red-500 text-sm">Field name is required.</div>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm">Placeholder</label>
+            <input class="border p-2 w-full rounded" formControlName="placeholder" />
+          </div>
+
+          <div>
+            <label class="block text-sm">Display Order</label>
+            <input type="number" class="border p-2 w-full rounded" formControlName="order" />
+          </div>
+
+          <div>
+            <label class="block text-sm">Default Value</label>
+            <input class="border p-2 w-full rounded" formControlName="defaultValue" />
+          </div>
+
+          <div>
+            <label class="block text-sm">Tooltip</label>
+            <input class="border p-2 w-full rounded" formControlName="tooltip" />
+          </div>
+
+          @if (['select','checkbox','radio'].includes(selectedField.get('type')?.value)) {
+            <div>
+              <label class="block text-sm">Options (comma separated)</label>
+              <input class="border p-2 w-full rounded" 
+                     [value]="selectedField.get('options')?.value?.join(', ')" 
+                     (input)="onOptionsChange($event)" />
+              @if (selectedField.get('options')?.hasError('required')) {
+                <div class="text-red-500 text-sm">Options are required for this field type.</div>
+              }
+            </div>
+          }
+
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" formControlName="required" />
+            <label>Required Field</label>
+          </div>
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" formControlName="readonly" />
+            <label>Readonly</label>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</form>
+
+<p-toast position="top-right"></p-toast>
