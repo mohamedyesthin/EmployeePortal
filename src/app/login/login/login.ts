@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
-import { InputTextModule, InputTextStyle } from 'primeng/inputtext';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { SidebarService } from '../../sidebar.service';
 
@@ -12,31 +12,49 @@ import { SidebarService } from '../../sidebar.service';
   selector: 'app-login',
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
-  imports: [FormsModule, InputTextModule, ButtonModule, Checkbox,ToastModule],
-  providers: [MessageService]
+  imports: [
+    ReactiveFormsModule,
+    InputTextModule,
+    ButtonModule,
+    CheckboxModule,
+    ToastModule
+  ],
+  providers: [MessageService],
+  standalone: true
 })
-export class Login {
-  username: string = '';
-  password: string = '';
-  rememberMe = false;
+export class Login implements OnInit {
+  loginForm!: FormGroup;
+
   router = inject(Router);
   messageService = inject(MessageService);
   sidebarService = inject(SidebarService);
+  fb = inject(FormBuilder);
 
-  onLogin() {
-    if (this.username && this.password) {
-      this.router.navigate(['/layout/dashboard']); // Redirect to the dashboard or home page after login
-      console.log('Login successful:', this.username, this.password, this.rememberMe);
-      this.sidebarService.close()
-      // TODO: Add authentication logic here
-    } else {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Validation Error',
-          detail: 'Please fill in all required fields.'
-        });
-        return;
-    }
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      username: ['mohamed', Validators.required],
+      password: ['123', Validators.required],
+      rememberMe: [false]
+    });
   }
 
+  onLogin() {
+    if (this.loginForm.invalid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation Error',
+        detail: 'Please fill in all required fields.'
+      });
+      return;
+    }
+
+    const { username, password, rememberMe } = this.loginForm.value;
+    console.log('Login successful:', username, password, rememberMe);
+
+    // Redirect after login
+    this.router.navigate(['/layout/dashboard']);
+    this.sidebarService.close();
+
+    // TODO: Add actual authentication logic
+  }
 }

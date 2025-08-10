@@ -54,18 +54,54 @@ export class Wizard implements OnInit {
   fb = inject(FormBuilder);
 
   ngOnInit() {
-    this.tabs = JSON.parse(localStorage.getItem('formTabs') || '[]');
+    const storedTabs = localStorage.getItem('formTabs');
+
+    if (storedTabs && JSON.parse(storedTabs).length > 0) {
+      this.tabs = JSON.parse(storedTabs);
+    } else {
+      // Default data when no saved tabs exist
+      this.tabs = [
+        {
+          tabName: 'Default Tab',
+          fields: [
+            {
+              type: 'text',
+              label: 'Full Name',
+              name: 'fullName',
+              placeholder: 'Enter your name',
+              required: true
+            },
+            {
+              type: 'email',
+              label: 'Email',
+              name: 'email',
+              placeholder: 'Enter your email',
+              required: true
+            },
+            {
+              type: 'select',
+              label: 'Country',
+              name: 'country',
+              options: ['India', 'USA', 'UK'],
+              required: true
+            }
+          ]
+        }
+      ];
+    }
+
     this.buildForm();
+
   }
 
   buildForm() {
     this.form = this.fb.group({
-      tabs: this.fb.array(this.tabs.map((tab:any) =>
+      tabs: this.fb.array(this.tabs.map((tab: any) =>
         this.fb.group({
           tabName: [tab.tabName, Validators.required],
           tabType: [tab.tabType || ''],
           tabOrder: [tab.tabOrder || 0],
-          fields: this.fb.array(tab.fields.map((field:any) => this.createFieldGroup(field)))
+          fields: this.fb.array(tab.fields.map((field: any) => this.createFieldGroup(field)))
         })
       ))
     });
